@@ -46,12 +46,29 @@ function handleNicknameSubmit(event) {
   socket.emit("nickname", input.value);
 }
 
-socket.on("welcome", (nickname) => {
+socket.on("welcome", (nickname, count) => {
+  const h3 = room.querySelector("h3");
+  h3.innerText = `Room ${roomName} (${count})`;
   addMessage(`${nickname} 왔다.`);
 });
-socket.on("bye", (nickname) => {
+socket.on("bye", (nickname, count) => {
+  const h3 = room.querySelector("h3");
+  h3.innerText = `Room ${roomName} (${count})`;
   addMessage(`${nickname} 갔다.`);
 });
 socket.on("new_message", addMessage);
+
+socket.on("room_change", (rooms) => {
+  const roomList = welcome.querySelector("ul");
+  roomList.innerHTML = "";
+  if (rooms.length === 0) {
+    return;
+  }
+  rooms.forEach((room) => {
+    const li = document.createElement("li");
+    li.innerText = room;
+    roomList.append(li);
+  });
+});
 
 welcome.addEventListener("submit", handleRoomSubmit);
