@@ -23,18 +23,41 @@ const httpServer = http.createServer(app);
 
 const wsServer = new Server(httpServer);
 
-// function handleConnection(socket) {
-//   console.log(socket);
-// }
-
+function publicRooms() {
+  const {
+    sockets: {
+      adapter: { sids, rooms },
+    },
+  } = wsServer;
+  const publicRooms = [];
+  rooms.forEach((_, key) => {
+    if (sids.get(key) === undefined) {
+      publicRooms.push(key);
+    }
+  });
+}
+//public 방을 찾기 위해 개인방이 포함된 방리스트에서 소캣 아이디를 가진 개인 방을 뺌
 const sockets = [];
 
 wsServer.on("connection", (socket) => {
+  socket["nickname"] = "Anon";
   socket.on("enter_room", (roomName, done) => {
-    console.log(roomName);
-    setTimeout(() => {
-      done("from Back");
-    }, 3000);
+    socket.join(roomName);
+    // console.log(socket.rooms);
+    //기본적으로 소캣은 id 명의 private 방에 혼자 있으며 방을 생성할 수 있음.
+    done();
+    socket.to(roomName).emit("welcome", socket.nickname);
+    // 나를 제외한 모두에게 welcome을 실행함.
+    socket.on("disconnecting", () => {
+      socket.rooms.forEach((room) =>
+        socket.to(room).emit("bye", socket.nickname)
+      );
+    });
+    socket.on("new_message", (msg, room, done) => {
+      socket.to(room).emit("new_message", `${socket.nickname}:${msg}`);
+      done();
+    });
+    socket.on("nickname", (nickname) => (socket["nickname"] = nickname));
   });
   // console.log(socket);
 });
