@@ -1,8 +1,8 @@
 import http from "http";
-import WebSocket, { WebSocketServer } from "ws";
 import express from "express";
 import path from "path";
-
+import { Server } from "socket.io";
+//IO 백설치
 const __dirname = path.resolve();
 
 const app = express();
@@ -19,39 +19,45 @@ app.get("/*", (_, res) => res.redirect("/"));
 
 const handlelisten = () => console.log(`Listening on http://localhost:3000`);
 
-const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+const httpServer = http.createServer(app);
 
-function handleConnection(socket) {
-  console.log(socket);
-}
+const wsServer = new Server(httpServer);
+
+// function handleConnection(socket) {
+//   console.log(socket);
+// }
 
 const sockets = [];
 
-wss.on("connection", (socket) => {
-  sockets.push(socket);
-  socket["nickname"] = "Anon";
-  console.log("connect");
-  socket.on("close", () => {
-    "disconnect";
-  });
-  socket.on("message", (msg) => {
-    const message = JSON.parse(msg);
-
-    console.log(message.payload);
-
-    switch (message.type) {
-      case "new_message":
-        sockets.forEach((aSocket) =>
-          aSocket.send(`${socket.nickname}:${message.payload}`)
-        );
-        break;
-
-      case "nickname":
-        socket["nickname"] = message.payload;
-        break;
-    }
-  });
+wsServer.on("connection", (socket) => {
+  socket.on("enter_room", (msg) => console.log(msg));
+  // console.log(socket);
 });
 
-server.listen(3000, handlelisten);
+// wss.on("connection", (socket) => {
+//   sockets.push(socket);
+//   socket["nickname"] = "Anon";
+//   console.log("connect");
+//   socket.on("close", () => {
+//     "disconnect";
+//   });
+//   socket.on("message", (msg) => {
+//     const message = JSON.parse(msg);
+
+//     console.log(message.payload);
+
+//     switch (message.type) {
+//       case "new_message":
+//         sockets.forEach((aSocket) =>
+//           aSocket.send(`${socket.nickname}:${message.payload}`)
+//         );
+//         break;
+
+//       case "nickname":
+//         socket["nickname"] = message.payload;
+//         break;
+//     }
+//   });
+// });
+
+httpServer.listen(3000, handlelisten);

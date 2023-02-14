@@ -10,12 +10,11 @@ html(lang="en")
         header 
             h1 Zoom
         main 
-            ul
-            form#nick    
-                input(placeholder="msg", required, type="text")
-                button Save
-            ul
-            form#message    
-                input(placeholder="msg", required, type="text")
-                button send
+            div#welcome 
+                form
+                    input(placeholder="room name", required, type)
+                    button Enter Room
+
+        script(src="/socket.io/socket.io.js")
+        //- 소캣IO 프론트 설치
         script(src="/public/js/app.js")
