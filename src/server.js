@@ -2,6 +2,7 @@ import http from "http";
 import express from "express";
 import path from "path";
 import { Server } from "socket.io";
+import { connect } from "http2";
 //IO 백설치
 const __dirname = path.resolve();
 
@@ -17,10 +18,17 @@ app.get("/", (_, res) => res.render("home"));
 // 주소가 "/" 일떄 기본디렉토리 + 인자 값을 랜더함 /src/public/views/home 을 랜더하는거지
 app.get("/*", (_, res) => res.redirect("/"));
 
-const handlelisten = () => console.log(`Listening on http://localhost:5000`);
+const handlelisten = () => console.log(`Listening on http://localhost:4000`);
 
 const httpServer = http.createServer(app);
 
 const wsServer = new Server(httpServer);
 
-httpServer.listen(5000, handlelisten);
+wsServer.on("connection", (socket) => {
+  socket.on("join_room", (roomName, done) => {
+    socket.join(roomName);
+    done();
+  });
+});
+
+httpServer.listen(4000, handlelisten);
