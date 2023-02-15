@@ -17,10 +17,10 @@ app.get("/", (_, res) => res.render("home"));
 // 주소가 "/" 일떄 기본디렉토리 + 인자 값을 랜더함 /src/public/views/home 을 랜더하는거지
 app.get("/*", (_, res) => res.redirect("/"));
 
-const handlelisten = () => console.log(`Listening on http://localhost:3000`);
+const handlelisten = () => console.log(`Listening on http://localhost:5000`);
 
 const httpServer = http.createServer(app);
 
 const wsServer = new Server(httpServer);
 
-httpServer.listen(3000, handlelisten);
+httpServer.listen(5000, handlelisten);
