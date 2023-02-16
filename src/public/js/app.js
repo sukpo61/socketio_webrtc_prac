@@ -101,10 +101,11 @@ camerasSelect.addEventListener("input", handleCameraChange);
 
 const welcomeForm = welcome.querySelector("form");
 
-socket.on("offer", async () => {
+socket.on("welcome", async () => {
   const offer = await myPeerConnection.createOffer();
   console.log(offer);
 });
+// 웰컴은 소켓 고유 인자.
 
 async function startMedia() {
   welcome.hidden = true;
@@ -114,7 +115,7 @@ async function startMedia() {
 }
 
 function makeConnection() {
-  const PeerConnection = new RTCPeerConnection();
+  myPeerConnection = new RTCPeerConnection();
   myStream
     .getTracks()
     .forEach((track) => myPeerConnection.addTrack(track, myStream));
